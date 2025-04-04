@@ -21,6 +21,11 @@
                             <ion-text v-if="store.queue.length > 0">店鋪籌號: <br />{{ store.queue.join(', ') }}</ion-text>
                             <ion-text v-else>暫無籌號資訊</ion-text>
                         </ion-col>
+                        <!-- Right side contents: CheckWaitingNo -->
+                        <ion-col  v-if="store.waitingNo" class="no-padding right top" id="CheckWaitingNo">
+                            <ion-text >輪侯籌號: {{store.waitingNo}} </ion-text>
+                            <ion-text >餘下輪侯數: {{store.waitingNoBetween}} </ion-text>
+                        </ion-col>
                         <!-- Right side contents: button group -->
                         <ion-col class="no-padding flex" size="6">
                             <div class="button-group">
@@ -39,6 +44,10 @@
                                 <ion-button fill="clear" size="small" v-else @click="toggleBookmark" aria-label="取消標記此店">
                                     <ion-icon slot="icon-only" :icon="bookmarkOutline"></ion-icon>
                                 </ion-button>
+                                <ion-item  v-if="store.isBookmark" >
+                                    <ion-input placeholder="Queue No."  v-model="waitingNo" @input="updateWaitingNo"
+                                    />
+                                </ion-item>
                             </div>
                         </ion-col>
                     </ion-row>
@@ -50,15 +59,19 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { IonButton, IonCard, IonCardContent, IonCardSubtitle, IonCardTitle, IonGrid, IonRow, IonCol, IonBadge, IonText, IonIcon, toastController } from '@ionic/vue';
+import { IonButton, IonCard, IonCardContent, IonCardSubtitle, IonCardTitle, IonGrid, IonRow, IonCol, IonBadge, IonText, IonIcon, IonInput, toastController } from '@ionic/vue';
 import { mapOutline, refreshOutline, bookmarkOutline, bookmark, checkmarkCircleOutline } from 'ionicons/icons';
 import { Store } from '@/data/classes'
 
 const props = defineProps(['store'])
-const emit = defineEmits(['toggleBookmark']);
+const emit = defineEmits(['toggleBookmark','update:waitingNo']);
+// const emit_queue_no = defineEmits(['toggleQueueNo']);
 const store: Store = ref(props.store);
 
+const waitingNo: Store.waitingNo = ref(props.store.waitingNo);
+
 const refreshStoreQueue = async (): Promise<void> => {
+    // console.log(props.store.waitingNo);
     await props.store.getQueue();
     await presentToast();
 }
@@ -66,6 +79,15 @@ const refreshStoreQueue = async (): Promise<void> => {
 const toggleBookmark = (): void => {
     emit("toggleBookmark", props.store.id);
 }
+
+const updateWaitingNo = (e): void => {
+    // console.log(e.target.value);
+    props.store.updateWaitingNo(e.target.value);
+}
+
+// const toggleQueueNo = (): void => {
+//     // emit_queue_no("toggleQueueNo", props.store.id );
+// }
 
 const presentToast = async (): Promise<void> => {
     const toast = await toastController.create({
@@ -81,15 +103,20 @@ const presentToast = async (): Promise<void> => {
 <style scoped>
 .container {
     padding: 1rem;
-    height: 11rem;
+    min-height: 11rem;
+    padding-bottom: 1rem;
 }
-
 .right {
     display: flex;
     justify-items: flex-end;
     align-items: center;
 }
 
+.top {
+    display: flex;
+    justify-items: flex-end;
+    align-items: top;
+}
 .flex {
     display: flex;
     justify-content: flex-end;

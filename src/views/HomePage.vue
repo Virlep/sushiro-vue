@@ -115,10 +115,17 @@ const autoUpdateQueue = (): void => {
 		interval = setInterval((): void => {
 			bookmarkIndexes.forEach((index: number) => {
 				stores.value[index].getQueue();
+				if (stores.value[index].waitingNoBetween) {
+					waitingNumAlert(stores.value[index]);
+				}
 			})
 		}
 			, 10000)
 	}
+}
+
+const waitingNumAlert = (store:Store): void => {
+	console.log('waitingNoAlert')
 }
 </script>
 <style scoped>

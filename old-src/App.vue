@@ -17,11 +17,11 @@ const notificationStoreId = ref('');
 const notificationOn = ref(false);
 const notificationAllowed = ref(false);
 const noticationRunning = ref(false);
-async function fetchStoreList(){
+async function fetchStoreList(numresults=60){
     loadingFail.value = false;
     loading.value = true;
     try{
-        const storeListResponse = await fetch(corsAnywhere + 'https://sushipass.sushiro.com.hk/api/2.0/info/storelist?latitude=22&longitude=114&numresults=25&region=HK', fetchOptions);
+        const storeListResponse = await fetch(corsAnywhere + 'https://sushipass.sushiro.com.hk/api/2.0/info/storelist?latitude=22&longitude=114&numresults=' + numresults + '&region=HK', fetchOptions);
         if (storeListResponse.ok){
             storeList.value = await storeListResponse.json();
             fetchStoresDetails();

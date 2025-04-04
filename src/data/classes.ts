@@ -28,9 +28,12 @@ export class Store {
     location: number[];
     wait: number;
     queue: number[];
+    reservationQueue: number[];
     isBookmark: boolean;
     latitude?: number;
     longitude?: number;
+    waitingNo:number | null;
+    waitingNoBetween:number | null;
     constructor(id: number, storeStatus: string, netTicketStatus: string, wait: number, name: string, address: string, area: string, latitude: number, longitude: number) {
         this.id = id;
         this.storeStatus = storeStatus;
@@ -41,14 +44,36 @@ export class Store {
         this.location = [latitude, longitude];
         this.wait = wait;
         this.queue = [];
+        this.reservationQueue = [];
         this.isBookmark = false;
+        this.waitingNo = null;
+        this.waitingNoBetween = null;
     }
     async getQueue(): Promise<void> {
         try {
             const response = await axios(`${corsAnywhereUrl}https://sushipass.sushiro.com.hk/api/2.0/remote/groupqueues?region=HK&storeid=${this.id}`);
             this.queue = response.data.storeQueue
+            this.reservationQueue = response.data.reservationQueue
+
+            // this.reservationQueue = [101,102,103] -- testing
+            if (this.waitingNo) {
+                console.log('this.waitingNo:' + this.waitingNo)
+                await this.checkWaitingStatus()
+            }
         } catch (err) {
             console.error(err)
+        }
+    }
+    async updateWaitingNo(number:number): Promise<void> {
+        this.waitingNo = number;
+        this.checkWaitingStatus();
+    }
+    async checkWaitingStatus(): Promise<void> {
+        const maxNum = Math.max(...this.reservationQueue);
+        if (this.waitingNo && this.reservationQueue.length != 0) {
+            this.waitingNoBetween = this.waitingNo - maxNum;
+        }else{
+            this.waitingNoBetween = null;
         }
     }
 }
