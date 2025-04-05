@@ -28,7 +28,7 @@ export class Store {
     location: number[];
     wait: number;
     queue: number[];
-    reservationQueue: number[];
+    boothQueue: number[];
     isBookmark: boolean;
     latitude?: number;
     longitude?: number;
@@ -44,7 +44,7 @@ export class Store {
         this.location = [latitude, longitude];
         this.wait = wait;
         this.queue = [];
-        this.reservationQueue = [];
+        this.boothQueue = [];
         this.isBookmark = false;
         this.waitingNo = null;
         this.waitingNoBetween = null;
@@ -53,9 +53,9 @@ export class Store {
         try {
             const response = await axios(`${corsAnywhereUrl}https://sushipass.sushiro.com.hk/api/2.0/remote/groupqueues?region=HK&storeid=${this.id}`);
             this.queue = response.data.storeQueue
-            this.reservationQueue = response.data.reservationQueue
+            this.boothQueue = response.data.boothQueue
 
-            // this.reservationQueue = [101,102,103] -- testing
+            // this.boothQueue = [101,102,103] -- testing
             if (this.waitingNo) {
                 console.log('this.waitingNo:' + this.waitingNo)
                 await this.checkWaitingStatus()
@@ -69,8 +69,8 @@ export class Store {
         this.checkWaitingStatus();
     }
     async checkWaitingStatus(): Promise<void> {
-        const maxNum = Math.max(...this.reservationQueue);
-        if (this.waitingNo && this.reservationQueue.length != 0) {
+        const maxNum = Math.max(...this.boothQueue);
+        if (this.waitingNo && this.boothQueue.length != 0) {
             this.waitingNoBetween = this.waitingNo - maxNum;
         }else{
             this.waitingNoBetween = null;

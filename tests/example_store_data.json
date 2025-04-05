@@ -1,0 +1,26 @@
+{
+    "boothQueue": [
+        "001",
+        "002",
+        "003"
+    ],
+    "counterQueue": [],
+    "mixedQueue": [
+        "001",
+        "002",
+        "003"
+    ],
+    "reservationQueue": [
+        "8051"
+    ],
+    "reservationCounterQueue": [],
+    "reservationBoothQueue": [],
+    "storeQueue": [
+        "8051",
+        "001",
+        "002"
+    ],
+    "storeCounterQueue": [],
+    "storeBoothQueue": [],
+    "separateQueue": 0
+}
